@@ -4,25 +4,60 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchRosters, fetchUsers } from '@/lib/api'
 import { Card } from './ui/Card'
 
+interface User {
+  user_id: string
+  display_name: string
+  avatar?: string
+}
+
+interface Roster {
+  roster_id: number
+  owner_id: string
+  settings: {
+    wins: number
+    losses: number
+    ties: number
+  }
+}
+
+interface Standing extends Roster {
+  user?: User
+}
+
 export default function TeamStandings() {
-  const { data: rosters, isLoading: rostersLoading } = useQuery({
+  const { data: rosters, isLoading: rostersLoading } = useQuery<Roster[]>({
     queryKey: ['rosters'],
-    queryFn: fetchRosters
+    queryFn: fetchRosters,
   })
 
-  const { data: users, isLoading: usersLoading } = useQuery({
+  const { data: users, isLoading: usersLoading } = useQuery<User[]>({
     queryKey: ['users'],
-    queryFn: fetchUsers
+    queryFn: fetchUsers,
+  })
+
+  // Combine roster data with user data
+  const standings = rosters?.map((roster: Roster) => {
+    const user = users?.find((u: User) => u.user_id === roster.owner_id)
+    return {
+      ...roster,
+      user,
+    }
+  })?.sort((a, b) => {
+    // Sort by wins first, then by points if wins are equal
+    if (a.settings.wins !== b.settings.wins) {
+      return b.settings.wins - a.settings.wins
+    }
+    return 0
   })
 
   if (rostersLoading || usersLoading) {
     return (
       <Card>
-        <div className="animate-pulse space-y-4">
-          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-          <div className="space-y-2">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-4 bg-gray-200 rounded"></div>
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="space-y-3">
+            {[...Array(12)].map((_, i) => (
+              <div key={i} className="h-4 bg-gray-200 rounded w-full"></div>
             ))}
           </div>
         </div>
@@ -30,28 +65,25 @@ export default function TeamStandings() {
     )
   }
 
-  // Combine roster data with user data
-  const standings = rosters?.map(roster => {
-    const user = users?.find(u => u.user_id === roster.owner_id)
-    return {
-      ...roster,
-      username: user?.display_name || 'Unknown',
-      avatar: user?.avatar
-    }
-  }).sort((a, b) => (b.settings?.wins || 0) - (a.settings?.wins || 0))
-
   return (
     <Card>
-      <h2 className="text-2xl font-semibold mb-4">Team Standings</h2>
+      <h2 className="text-xl font-semibold mb-4">Standings</h2>
       <div className="space-y-4">
-        {standings?.map((team, index) => (
-          <div key={team.roster_id} className="flex items-center justify-between">
+        {standings?.map((team: Standing) => (
+          <div key={team.roster_id} className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
-              <span className="text-gray-500">{index + 1}.</span>
-              <span className="font-medium">{team.username}</span>
+              {team.user?.avatar && (
+                <img
+                  src={`https://sleepercdn.com/avatars/thumbs/${team.user.avatar}`}
+                  alt="avatar"
+                  className="w-6 h-6 rounded-full"
+                />
+              )}
+              <span>{team.user?.display_name || `Team ${team.roster_id}`}</span>
             </div>
             <div className="text-sm text-gray-600">
-              {team.settings?.wins || 0}-{team.settings?.losses || 0}
+              {team.settings.wins}W - {team.settings.losses}L
+              {team.settings.ties > 0 && ` - ${team.settings.ties}T`}
             </div>
           </div>
         ))}

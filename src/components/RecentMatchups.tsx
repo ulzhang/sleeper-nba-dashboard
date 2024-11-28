@@ -121,7 +121,7 @@ export default function RecentMatchups() {
 
   // Create a mapping of roster_id to user
   const rosterToUser = rosters?.reduce((acc: { [key: number]: User | undefined }, roster: Roster) => {
-    const user = users?.find(u => u.user_id === roster.owner_id)
+    const user = users?.find((u: User) => u.user_id === roster.owner_id)
     acc[roster.roster_id] = user
     return acc
   }, {})
@@ -155,12 +155,13 @@ export default function RecentMatchups() {
         </div>
       </div>
       <div className="space-y-4">
-        {groupedMatchups && Object.values(groupedMatchups).map((matchup: Matchup[]) => {
-          const team1User = rosterToUser?.[matchup[0]?.roster_id]
-          const team2User = rosterToUser?.[matchup[1]?.roster_id]
+        {groupedMatchups && Object.values(groupedMatchups).map((matchup: unknown) => {
+          const typedMatchup = matchup as Matchup[]
+          const team1User = rosterToUser?.[typedMatchup[0]?.roster_id]
+          const team2User = rosterToUser?.[typedMatchup[1]?.roster_id]
 
           return (
-            <div key={matchup[0]?.matchup_id} className="border-b pb-2">
+            <div key={typedMatchup[0]?.matchup_id} className="border-b pb-2">
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-2">
                   {team1User?.avatar && (
@@ -185,8 +186,8 @@ export default function RecentMatchups() {
                 </div>
               </div>
               <div className="flex justify-between items-center text-sm text-gray-600 mt-1">
-                <span>{matchup[0]?.points?.toFixed(2) || '0.00'}</span>
-                <span>{matchup[1]?.points?.toFixed(2) || '0.00'}</span>
+                <span>{typedMatchup[0]?.points?.toFixed(2) || '0.00'}</span>
+                <span>{typedMatchup[1]?.points?.toFixed(2) || '0.00'}</span>
               </div>
             </div>
           )
