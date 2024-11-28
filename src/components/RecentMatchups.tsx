@@ -7,10 +7,33 @@ import { Card } from './ui/Card'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'
 import { format, addDays, differenceInDays, startOfWeek } from 'date-fns'
 
+interface WeekSchedule {
+  start: Date
+  end: Date
+  week: number
+}
+
+interface Matchup {
+  matchup_id: number
+  roster_id: number
+  points: number
+}
+
+interface User {
+  user_id: string
+  display_name: string
+  avatar?: string
+}
+
+interface Roster {
+  roster_id: number
+  owner_id: string
+}
+
 // NBA season started on October 24, 2023
 const TOTAL_WEEKS = 25
 
-const WEEK_SCHEDULE = [
+const WEEK_SCHEDULE: WeekSchedule[] = [
   { start: new Date('2023-10-24T00:00:00'), end: new Date('2023-10-27T23:59:59'), week: 1 },
   { start: new Date('2023-10-28T00:00:00'), end: new Date('2023-11-03T23:59:59'), week: 2 },
   { start: new Date('2023-11-04T00:00:00'), end: new Date('2023-11-10T23:59:59'), week: 3 },
@@ -36,9 +59,10 @@ export default function RecentMatchups() {
   const [selectedWeek, setSelectedWeek] = useState(getCurrentWeek())
 
   // Calculate date range for the selected week
-  const weekStartDate = WEEK_SCHEDULE.find(w => w.week === selectedWeek)?.start
-  const weekEndDate = WEEK_SCHEDULE.find(w => w.week === selectedWeek)?.end
-  const dateRange = `${format(weekStartDate, 'MMM d')} - ${format(weekEndDate, 'MMM d')}`
+  const weekData = WEEK_SCHEDULE.find(w => w.week === selectedWeek)
+  const dateRange = weekData 
+    ? `${format(weekData.start, 'MMM d')} - ${format(weekData.end, 'MMM d')}`
+    : ''
 
   const { data: matchups, isLoading: matchupsLoading } = useQuery({
     queryKey: ['matchups', selectedWeek],
@@ -87,7 +111,7 @@ export default function RecentMatchups() {
   }
 
   // Group matchups by matchup_id
-  const groupedMatchups = matchups?.reduce((acc, matchup) => {
+  const groupedMatchups = matchups?.reduce((acc: { [key: number]: Matchup[] }, matchup: Matchup) => {
     if (!acc[matchup.matchup_id]) {
       acc[matchup.matchup_id] = []
     }
@@ -96,7 +120,7 @@ export default function RecentMatchups() {
   }, {})
 
   // Create a mapping of roster_id to user
-  const rosterToUser = rosters?.reduce((acc, roster) => {
+  const rosterToUser = rosters?.reduce((acc: { [key: number]: User | undefined }, roster: Roster) => {
     const user = users?.find(u => u.user_id === roster.owner_id)
     acc[roster.roster_id] = user
     return acc
@@ -131,7 +155,7 @@ export default function RecentMatchups() {
         </div>
       </div>
       <div className="space-y-4">
-        {groupedMatchups && Object.values(groupedMatchups).map((matchup: any) => {
+        {groupedMatchups && Object.values(groupedMatchups).map((matchup: Matchup[]) => {
           const team1User = rosterToUser?.[matchup[0]?.roster_id]
           const team2User = rosterToUser?.[matchup[1]?.roster_id]
 
