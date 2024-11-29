@@ -31,17 +31,18 @@ export const LOGGING_CONFIG: Record<string, LogConfig> = {
     enabledCategories: [
       // Core logging
       'error',     // Always keep error logging
-      'api',       // API call details
-      'performance', // Performance metrics
-      'players',   // Player-related logs
-      'scoring',   // Fantasy point calculation logs
-      'stats',     // Stats processing
       'debug',     // General debugging
-      'ui',        // UI rendering logs
-      'router',    // Routing logs
-      'data',      // Data fetching logs
-      'init',      // Initialization logs
-      'config'     // Configuration change logs
+      // 'api',       // API call details
+      // 'performance', // Performance metrics
+      // 'players',   // Player-related logs
+      // 'scoring',   // Fantasy point calculation logs
+      // 'stats',     // Stats processing
+
+      // 'ui',        // UI rendering logs
+      // 'router',    // Routing logs
+      // 'data',      // Data fetching logs
+      // 'init',      // Initialization logs
+      // 'config'     // Configuration change logs
     ],
     logLevel: 'info',
     showTimestamp: true,
