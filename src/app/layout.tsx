@@ -7,8 +7,29 @@ import Navigation from '@/components/Navigation'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Sleeper NBA Dashboard',
-  description: 'Track your Sleeper NBA fantasy league performance',
+  metadataBase: new URL('https://wogel-dashboard.vercel.app'),
+  title: 'WOGEL Dashboard',
+  description: 'Version 0.0.2 Cleaner dashboard and player research tabs!',
+  openGraph: {
+    title: 'WOGEL Dashboard',
+    description: 'Version 0.0.2 Cleaner dashboard and player research tabs!',
+    images: [
+      {
+        url: '/og-image.jpeg', 
+        width: 1200,
+        height: 630,
+        alt: 'WOGEL Dashboard Preview'
+      }
+    ],
+    type: 'website',
+    url: 'https://wogel-dashboard.vercel.app'
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'WOGEL Dashboard',
+    description: 'Version 0.0.2 Cleaner dashboard and player research tabs!',
+    images: ['/og-image.jpeg']
+  }
 }
 
 export default function RootLayout({
