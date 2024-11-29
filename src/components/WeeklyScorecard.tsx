@@ -1,10 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'
 import { format } from 'date-fns'
 import { useMatchups, useRosters, useUsers } from '../lib/queries'
 import type { Matchup, Roster, User } from '../lib/types'
 import { Card } from './ui/Card'
+import { WEEK_SCHEDULE, getCurrentWeek } from '../lib/config'
 
 interface TeamScore {
   roster_id: number
@@ -14,11 +16,27 @@ interface TeamScore {
 }
 
 export default function WeeklyScorecard() {
-  const [selectedWeek, setSelectedWeek] = useState(1)
+  const [selectedWeek, setSelectedWeek] = useState(getCurrentWeek())
 
   const { data: matchups, isLoading: matchupsLoading } = useMatchups(selectedWeek)
   const { data: users, isLoading: usersLoading } = useUsers()
   const { data: rosters, isLoading: rostersLoading } = useRosters()
+
+  const handlePreviousWeek = () => {
+    if (selectedWeek > 1) {
+      setSelectedWeek(prev => prev - 1)
+    }
+  }
+
+  const handleNextWeek = () => {
+    if (selectedWeek < WEEK_SCHEDULE.length) {
+      setSelectedWeek(prev => prev + 1)
+    }
+  }
+
+  const handleJumpToCurrentWeek = () => {
+    setSelectedWeek(getCurrentWeek())
+  }
 
   if (matchupsLoading || usersLoading || rostersLoading) {
     return (
@@ -55,20 +73,63 @@ export default function WeeklyScorecard() {
     team.isAboveMedian = index < medianIndex
   })
 
+  // Color determination function
+  const getTeamColor = (team: TeamScore, index: number, medianIndex: number) => {
+    const isAboveMedian = index < medianIndex
+    const otherTeamPoints = teamScores[medianIndex]?.points || 0
+    const pointDiff = Math.abs(team.points - otherTeamPoints)
+    
+    // Neck and neck (within 15 points)
+    if (pointDiff <= 15) {
+      return 'bg-yellow-50/50 border-yellow-100'
+    }
+    
+    // Large point differential (more than 60 points)
+    if (pointDiff > 60) {
+      return isAboveMedian 
+        ? 'bg-green-200/50 border-green-200' 
+        : 'bg-red-100/30 border-red-100'
+    }
+    
+    // Standard point difference
+    return isAboveMedian 
+      ? 'bg-green-100/50 border-green-100' 
+      : 'bg-red-50/30 border-red-50'
+  }
+
   return (
     <Card>
-      <h2 className="text-xl font-semibold mb-4">Weekly Scorecard</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold">Weekly Scorecard</h2>
+        <div className="flex items-center space-x-4">
+          <button 
+            onClick={handlePreviousWeek}
+            disabled={selectedWeek === 1}
+            className="p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ChevronLeftIcon className="h-5 w-5" />
+          </button>
+          <span className="text-sm text-gray-600">Week {selectedWeek}</span>
+          <button 
+            onClick={handleNextWeek}
+            disabled={selectedWeek === WEEK_SCHEDULE.length}
+            className="p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ChevronRightIcon className="h-5 w-5" />
+          </button>
+          <button
+            onClick={handleJumpToCurrentWeek}
+            className="ml-2 px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+          >
+            Today
+          </button>
+        </div>
+      </div>
       <div className="space-y-3">
         {teamScores.map((team, index) => (
           <div
             key={team.roster_id}
-            className={`flex items-center justify-between p-2 rounded ${
-              team.isAboveMedian
-                ? 'bg-green-50 border border-green-100'
-                : index === medianIndex
-                ? 'bg-yellow-50 border border-yellow-100'
-                : 'bg-red-50 border border-red-100'
-            }`}
+            className={`flex items-center justify-between p-2 rounded border ${getTeamColor(team, index, medianIndex)}`}
           >
             <div className="flex items-center space-x-3">
               <span className="text-gray-500 w-6">{index + 1}.</span>
@@ -77,6 +138,13 @@ export default function WeeklyScorecard() {
                   <img
                     src={`https://sleepercdn.com/avatars/thumbs/${team.user.avatar}`}
                     alt="avatar"
+                    className="w-6 h-6 rounded-full"
+                  />
+                )}
+                {!team.user?.avatar && (
+                  <img
+                    src="/favicon.ico"
+                    alt="default avatar"
                     className="w-6 h-6 rounded-full"
                   />
                 )}

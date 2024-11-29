@@ -20,4 +20,14 @@ export interface Matchup {
   matchup_id: number
   roster_id: number
   points: number
+  
+  // Additional fields for comprehensive debugging
+  starters?: string[]
+  players?: string[]
+  starters_points?: number | null
+  
+  // Optional metadata for deeper investigation
+  metadata?: {
+    [key: string]: any
+  }
 }

@@ -33,8 +33,8 @@ export const LOGGING_CONFIG: Record<string, LogConfig> = {
       'error',     // Always keep error logging
       'api',       // API call logs
       'data',      // Data fetching logs
-      'players',   // Player-related logs
-      'research',  // Research page logs
+      // 'players',   // Player-related logs
+      // 'research',  // Research page logs
       // 'ui',        // UI rendering logs
       // 'router',    // Routing logs
       // 'init',      // Initialization logs

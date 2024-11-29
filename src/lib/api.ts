@@ -24,6 +24,7 @@ export async function fetchUsers() {
 
 export async function fetchMatchups(week: number) {
   const response = await axios.get(`${SLEEPER_API_BASE}/league/${LEAGUE_ID}/matchups/${week}`)
+  
   return response.data
 }
 
