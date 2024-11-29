@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/solid';
+import { ArrowDownIcon } from '@heroicons/react/24/solid';
 import { getPlayer } from '@/lib/players';
 
 interface PlayerData {
@@ -15,19 +15,12 @@ interface ResearchTableProps {
 }
 
 type SortKey = 'name' | 'owned' | 'started' | 'ratio' | 'teamOwned';
-type SortDirection = 'asc' | 'desc';
 
 export default function ResearchTable({ data }: ResearchTableProps) {
   const [sortKey, setSortKey] = useState<SortKey>('owned');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   const handleSort = (key: SortKey) => {
-    if (sortKey === key) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortKey(key);
-      setSortDirection('desc'); // Always default to descending when changing columns
-    }
+    setSortKey(key);
   };
 
   const sortedData = Object.entries(data)
@@ -44,34 +37,29 @@ export default function ResearchTable({ data }: ResearchTableProps) {
       };
     })
     .sort((a, b) => {
-      let comparison = 0;
       switch (sortKey) {
         case 'name':
-          comparison = a.name.localeCompare(b.name);
-          break;
+          return b.name.localeCompare(a.name);
         case 'owned':
-          comparison = b.owned - a.owned;
-          break;
+          return b.owned - a.owned;
         case 'started':
-          comparison = b.started - a.started;
-          break;
+          return b.started - a.started;
         case 'ratio':
-          comparison = b.ratio - a.ratio;
-          break;
+          return b.ratio - a.ratio;
         case 'teamOwned':
-          comparison = (a.teamOwned ? 1 : 0) - (b.teamOwned ? 1 : 0);
-          break;
+          return (b.teamOwned ? 1 : 0) - (a.teamOwned ? 1 : 0);
+        default:
+          return 0;
       }
-      return sortDirection === 'asc' ? comparison : -comparison;
     });
 
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
-        <thead>
+        <thead className="bg-gray-100 uppercase">
           <tr>
             {[
-              { key: 'name', label: 'Player Name' },
+              { key: 'name', label: 'Player' },
               { key: 'owned', label: 'Owned %' },
               { key: 'started', label: 'Started %' },
               { key: 'ratio', label: 'Started/Owned' },
@@ -79,15 +67,13 @@ export default function ResearchTable({ data }: ResearchTableProps) {
             ].map(({ key, label }) => (
               <th
                 key={key}
+                className="px-4 py-3 cursor-pointer hover:bg-gray-200"
                 onClick={() => handleSort(key as SortKey)}
-                className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 <div className="flex items-center space-x-1">
                   <span>{label}</span>
                   {sortKey === key && (
-                    sortDirection === 'asc' ? 
-                      <ArrowUpIcon className="h-4 w-4 text-gray-400" /> :
-                      <ArrowDownIcon className="h-4 w-4 text-gray-400" />
+                    <ArrowDownIcon className="h-4 w-4 text-gray-400" />
                   )}
                 </div>
               </th>
