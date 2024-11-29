@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'WOGEL Dashboard',
     description: 'Version 0.1.3 Adding analytics and speed insights',
+    siteName: 'WOGEL Dashboard',
     images: [
       {
         url: '/og-image.jpeg', 
