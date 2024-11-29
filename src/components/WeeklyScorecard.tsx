@@ -1,26 +1,10 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
-import { fetchMatchups, fetchUsers, fetchRosters } from '@/lib/api'
+import { useState } from 'react'
+import { format } from 'date-fns'
+import { useMatchups, useRosters, useUsers } from '../lib/queries'
+import type { Matchup, Roster, User } from '../lib/types'
 import { Card } from './ui/Card'
-import { getCurrentWeek } from '@/lib/config'
-
-interface User {
-  user_id: string
-  display_name: string
-  avatar?: string
-}
-
-interface Roster {
-  roster_id: number
-  owner_id: string
-}
-
-interface Matchup {
-  matchup_id: number
-  roster_id: number
-  points: number
-}
 
 interface TeamScore {
   roster_id: number
@@ -30,20 +14,11 @@ interface TeamScore {
 }
 
 export default function WeeklyScorecard() {
-  const { data: matchups, isLoading: matchupsLoading } = useQuery<Matchup[]>({
-    queryKey: ['matchups', getCurrentWeek()],
-    queryFn: () => fetchMatchups(getCurrentWeek()),
-  })
+  const [selectedWeek, setSelectedWeek] = useState(1)
 
-  const { data: users, isLoading: usersLoading } = useQuery<User[]>({
-    queryKey: ['users'],
-    queryFn: fetchUsers,
-  })
-
-  const { data: rosters, isLoading: rostersLoading } = useQuery<Roster[]>({
-    queryKey: ['rosters'],
-    queryFn: fetchRosters,
-  })
+  const { data: matchups, isLoading: matchupsLoading } = useMatchups(selectedWeek)
+  const { data: users, isLoading: usersLoading } = useUsers()
+  const { data: rosters, isLoading: rostersLoading } = useRosters()
 
   if (matchupsLoading || usersLoading || rostersLoading) {
     return (

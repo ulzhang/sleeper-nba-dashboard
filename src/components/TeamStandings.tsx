@@ -1,54 +1,31 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
-import { fetchRosters, fetchUsers } from '@/lib/api'
+import { useRosters, useUsers } from '../lib/queries'
+import type { Roster, User } from '../lib/types'
 import { Card } from './ui/Card'
-
-interface User {
-  user_id: string
-  display_name: string
-  avatar?: string
-}
-
-interface Roster {
-  roster_id: number
-  owner_id: string
-  settings: {
-    wins: number
-    losses: number
-    ties: number
-  }
-}
 
 interface Standing extends Roster {
   user?: User
 }
 
 export default function TeamStandings() {
-  const { data: rosters, isLoading: rostersLoading } = useQuery<Roster[]>({
-    queryKey: ['rosters'],
-    queryFn: fetchRosters,
-  })
-
-  const { data: users, isLoading: usersLoading } = useQuery<User[]>({
-    queryKey: ['users'],
-    queryFn: fetchUsers,
-  })
+  const { data: rosters, isLoading: rostersLoading } = useRosters()
+  const { data: users, isLoading: usersLoading } = useUsers()
 
   // Combine roster data with user data
-  const standings = rosters?.map((roster: Roster) => {
-    const user = users?.find((u: User) => u.user_id === roster.owner_id)
-    return {
-      ...roster,
-      user,
-    }
-  })?.sort((a, b) => {
+  const standings = rosters?.map((roster: Roster) => ({
+    ...roster,
+    user: users?.find(u => u.user_id === roster.owner_id)
+  }))?.sort((a, b) => {
     // Sort by wins first, then by points if wins are equal
-    if (a.settings.wins !== b.settings.wins) {
-      return b.settings.wins - a.settings.wins
+    const aWins = a.settings?.wins ?? 0
+    const bWins = b.settings?.wins ?? 0
+    
+    if (aWins !== bWins) {
+      return bWins - aWins
     }
     return 0
-  })
+  }) || []
 
   if (rostersLoading || usersLoading) {
     return (
@@ -82,8 +59,8 @@ export default function TeamStandings() {
               <span>{team.user?.display_name || `Team ${team.roster_id}`}</span>
             </div>
             <div className="text-sm text-gray-600">
-              {team.settings.wins}W - {team.settings.losses}L
-              {team.settings.ties > 0 && ` - ${team.settings.ties}T`}
+              {team.settings?.wins ?? 0}W - {team.settings?.losses ?? 0}L
+              {(team.settings?.ties ?? 0) > 0 && ` - ${team.settings?.ties}T`}
             </div>
           </div>
         ))}

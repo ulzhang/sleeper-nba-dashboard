@@ -1,28 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { fetchMatchups, fetchUsers, fetchRosters } from '@/lib/api'
+import { useMatchups, useRosters, useUsers } from '../lib/queries'
+import type { Matchup, Roster, User } from '../lib/types'
 import { Card } from './ui/Card'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'
 import { format } from 'date-fns'
-import { WEEK_SCHEDULE, getCurrentWeek, WeekSchedule } from '@/lib/config'
+import { WEEK_SCHEDULE, getCurrentWeek } from '../lib/config'
 
-interface Matchup {
-  matchup_id: number
-  roster_id: number
-  points: number
-}
-
-interface User {
-  user_id: string
-  display_name: string
-  avatar?: string
-}
-
-interface Roster {
-  roster_id: number
-  owner_id: string
+interface WeekSchedule {
+  week: number
+  start: Date
+  end: Date
 }
 
 export default function RecentMatchups() {
@@ -34,20 +23,9 @@ export default function RecentMatchups() {
     ? `${format(weekData.start, 'MMM d')} - ${format(weekData.end, 'MMM d')}`
     : ''
 
-  const { data: matchups, isLoading: matchupsLoading } = useQuery({
-    queryKey: ['matchups', selectedWeek],
-    queryFn: () => fetchMatchups(selectedWeek)
-  })
-
-  const { data: users, isLoading: usersLoading } = useQuery({
-    queryKey: ['users'],
-    queryFn: fetchUsers
-  })
-
-  const { data: rosters, isLoading: rostersLoading } = useQuery({
-    queryKey: ['rosters'],
-    queryFn: fetchRosters
-  })
+  const { data: matchups, isLoading: matchupsLoading } = useMatchups(selectedWeek)
+  const { data: users, isLoading: usersLoading } = useUsers()
+  const { data: rosters, isLoading: rostersLoading } = useRosters()
 
   const handlePreviousWeek = () => {
     if (selectedWeek > 1) {
@@ -81,7 +59,7 @@ export default function RecentMatchups() {
   }
 
   // Group matchups by matchup_id
-  const groupedMatchups = matchups?.reduce((acc: { [key: number]: Matchup[] }, matchup: Matchup) => {
+  const groupedMatchups = (matchups || []).reduce((acc: { [key: number]: Matchup[] }, matchup: Matchup) => {
     if (!acc[matchup.matchup_id]) {
       acc[matchup.matchup_id] = []
     }
@@ -90,8 +68,8 @@ export default function RecentMatchups() {
   }, {})
 
   // Create a mapping of roster_id to user
-  const rosterToUser = rosters?.reduce((acc: { [key: number]: User | undefined }, roster: Roster) => {
-    const user = users?.find((u: User) => u.user_id === roster.owner_id)
+  const rosterToUser = (rosters || []).reduce((acc: { [key: number]: User | undefined }, roster: Roster) => {
+    const user = users?.find(u => u.user_id === roster.owner_id)
     acc[roster.roster_id] = user
     return acc
   }, {})
