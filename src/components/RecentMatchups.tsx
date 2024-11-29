@@ -5,13 +5,8 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchMatchups, fetchUsers, fetchRosters } from '@/lib/api'
 import { Card } from './ui/Card'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'
-import { format, addDays, differenceInDays, startOfWeek } from 'date-fns'
-
-interface WeekSchedule {
-  start: Date
-  end: Date
-  week: number
-}
+import { format } from 'date-fns'
+import { WEEK_SCHEDULE, getCurrentWeek, WeekSchedule } from '@/lib/config'
 
 interface Matchup {
   matchup_id: number
@@ -28,31 +23,6 @@ interface User {
 interface Roster {
   roster_id: number
   owner_id: string
-}
-
-// NBA season started on October 24, 2023
-const TOTAL_WEEKS = 25
-
-const WEEK_SCHEDULE: WeekSchedule[] = [
-  { start: new Date('2023-10-24T00:00:00'), end: new Date('2023-10-27T23:59:59'), week: 1 },
-  { start: new Date('2023-10-28T00:00:00'), end: new Date('2023-11-03T23:59:59'), week: 2 },
-  { start: new Date('2023-11-04T00:00:00'), end: new Date('2023-11-10T23:59:59'), week: 3 },
-  { start: new Date('2023-11-11T00:00:00'), end: new Date('2023-11-17T23:59:59'), week: 4 },
-  { start: new Date('2023-11-18T00:00:00'), end: new Date('2023-11-24T23:59:59'), week: 5 },
-  { start: new Date('2023-11-25T00:00:00'), end: new Date('2023-12-01T23:59:59'), week: 6 },
-  { start: new Date('2023-12-02T00:00:00'), end: new Date('2023-12-08T23:59:59'), week: 7 },
-  { start: new Date('2023-12-09T00:00:00'), end: new Date('2023-12-15T23:59:59'), week: 8 },
-  // ... rest of the weeks
-]
-
-const getCurrentWeek = () => {
-  const today = new Date()
-  console.log('Today:', today)
-  
-  const currentWeek = WEEK_SCHEDULE.find(w => today >= w.start && today <= w.end)
-  console.log('Found week:', currentWeek?.week)
-  
-  return currentWeek?.week || 6 // Default to week 6 if not found
 }
 
 export default function RecentMatchups() {
@@ -86,7 +56,7 @@ export default function RecentMatchups() {
   }
 
   const handleNextWeek = () => {
-    if (selectedWeek < TOTAL_WEEKS) {
+    if (selectedWeek < WEEK_SCHEDULE.length) {
       setSelectedWeek(prev => prev + 1)
     }
   }
@@ -141,7 +111,7 @@ export default function RecentMatchups() {
           <span className="text-sm text-gray-600">{dateRange}</span>
           <button 
             onClick={handleNextWeek}
-            disabled={selectedWeek === TOTAL_WEEKS}
+            disabled={selectedWeek === WEEK_SCHEDULE.length}
             className="p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ChevronRightIcon className="h-5 w-5" />

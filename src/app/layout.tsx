@@ -2,12 +2,13 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
+import Navigation from '@/components/Navigation'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Sleeper NBA Fantasy Dashboard',
-  description: 'Interactive dashboard for your Sleeper NBA fantasy league',
+  title: 'Sleeper NBA Dashboard',
+  description: 'Track your Sleeper NBA fantasy league performance',
 }
 
 export default function RootLayout({
@@ -19,6 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
+          <Navigation />
           <main className="min-h-screen bg-gray-50">
             {children}
           </main>
