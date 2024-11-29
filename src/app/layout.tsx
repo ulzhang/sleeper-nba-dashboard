@@ -11,10 +11,10 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   metadataBase: new URL('https://sleeper-nba-dashboard.vercel.app'),
   title: 'WOGEL Dashboard',
-  description: 'Version 0.0.2 Cleaner dashboard and player research tabs!',
+  description: 'Version 0.1.3 Adding analytics and speed insights',
   openGraph: {
     title: 'WOGEL Dashboard',
-    description: 'Version 0.0.2 Cleaner dashboard and player research tabs!',
+    description: 'Version 0.1.3 Adding analytics and speed insights',
     images: [
       {
         url: '/og-image.jpeg', 
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'WOGEL Dashboard',
-    description: 'Version 0.0.2 Cleaner dashboard and player research tabs!',
+    description: 'Version 0.1.3 Adding analytics and speed insights',
     images: ['/og-image.jpeg']
   }
 }
