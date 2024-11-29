@@ -12,7 +12,7 @@ interface TeamScore {
   roster_id: number
   points: number
   user?: User
-  isAboveMedian: boolean
+  isAboveMedian: boolean | null
 }
 
 export default function WeeklyScorecard() {
@@ -68,39 +68,35 @@ export default function WeeklyScorecard() {
   // Calculate median index
   const medianIndex = Math.floor(teamScores.length / 2)
 
-  // Mark teams above/below median
+  // Mark teams above/below/at median
   teamScores.forEach((team, index) => {
-    team.isAboveMedian = index < medianIndex
+    if (index === medianIndex) {
+      team.isAboveMedian = null // Explicitly mark as median
+    } else {
+      team.isAboveMedian = index < medianIndex
+    }
   })
 
   // Color determination function
   const getTeamColor = (team: TeamScore, index: number, medianIndex: number) => {
-    const isAboveMedian = index < medianIndex
-    const otherTeamPoints = teamScores[medianIndex]?.points || 0
-    const pointDiff = Math.abs(team.points - otherTeamPoints)
-    
-    // Neck and neck (within 15 points)
-    if (pointDiff <= 15) {
+    // Median team gets yellow
+    if (index === medianIndex) {
       return 'bg-yellow-50/50 border-yellow-100'
     }
     
-    // Large point differential (more than 60 points)
-    if (pointDiff > 60) {
-      return isAboveMedian 
-        ? 'bg-green-200/50 border-green-200' 
-        : 'bg-red-100/30 border-red-100'
+    // Teams above median get green
+    if (index < medianIndex) {
+      return 'bg-green-100/50 border-green-100'
     }
     
-    // Standard point difference
-    return isAboveMedian 
-      ? 'bg-green-100/50 border-green-100' 
-      : 'bg-red-50/30 border-red-50'
+    // Teams below median get red
+    return 'bg-red-50/50 border-red-50'
   }
 
   return (
     <Card>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Weekly Scorecard</h2>
+        <h2 className="text-xl font-semibold">Median</h2>
         <div className="flex items-center space-x-4">
           <button 
             onClick={handlePreviousWeek}
@@ -154,10 +150,10 @@ export default function WeeklyScorecard() {
             <div className="flex items-center space-x-2">
               <span className="font-mono">{team.points.toFixed(2)}</span>
               <span className="text-sm">
-                {team.isAboveMedian ? (
-                  <span className="text-green-600">↑</span>
-                ) : index === medianIndex ? (
+                {team.isAboveMedian === null ? (
                   <span className="text-yellow-600">―</span>
+                ) : team.isAboveMedian ? (
+                  <span className="text-green-600">↑</span>
                 ) : (
                   <span className="text-red-600">↓</span>
                 )}

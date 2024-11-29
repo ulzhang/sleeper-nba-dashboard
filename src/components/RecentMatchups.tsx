@@ -26,12 +26,6 @@ export default function RecentMatchups() {
   const [selectedWeek, setSelectedWeek] = useState(getCurrentWeek())
   const [isMobile, setIsMobile] = useState(false)
 
-  // Calculate date range for the selected week
-  const weekData = WEEK_SCHEDULE.find(w => w.week === selectedWeek)
-  const dateRange = weekData 
-    ? `${format(weekData.start, 'MMM d')} - ${format(weekData.end, 'MMM d')}`
-    : ''
-
   const { data: matchups, isLoading: matchupsLoading } = useMatchups(selectedWeek)
   const { data: users, isLoading: usersLoading } = useUsers()
   const { data: rosters, isLoading: rostersLoading } = useRosters()
@@ -201,7 +195,7 @@ export default function RecentMatchups() {
   return (
     <Card>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-semibold">Week {selectedWeek}</h2>
+        <h2 className="text-xl font-bold">Head 2 Head</h2>
         <div className="flex items-center space-x-4">
           <button 
             onClick={handlePreviousWeek}
@@ -210,7 +204,7 @@ export default function RecentMatchups() {
           >
             <ChevronLeftIcon className="h-5 w-5" />
           </button>
-          <span className="text-sm text-gray-600">{dateRange}</span>
+          <span className="text-sm text-gray-600">Week {selectedWeek}</span>
           <button 
             onClick={handleNextWeek}
             disabled={selectedWeek === WEEK_SCHEDULE.length}
@@ -220,7 +214,7 @@ export default function RecentMatchups() {
           </button>
           <button
             onClick={handleJumpToCurrentWeek}
-            className="ml-2 px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+            className="px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
           >
             Today
           </button>
