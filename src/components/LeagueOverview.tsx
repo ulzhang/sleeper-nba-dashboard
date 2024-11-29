@@ -33,10 +33,6 @@ export default function LeagueOverview() {
           <p className="text-gray-600">Season</p>
           <p className="font-medium">{leagueInfo?.season}</p>
         </div>
-        <div>
-          <p className="text-gray-600">Total Teams</p>
-          <p className="font-medium">{leagueInfo?.total_teams}</p>
-        </div>
       </div>
     </Card>
   )
