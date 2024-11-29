@@ -7,7 +7,7 @@ import Navigation from '@/components/Navigation'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://wogel-dashboard.vercel.app'),
+  metadataBase: new URL('https://sleeper-nba-dashboard.vercel.app'),
   title: 'WOGEL Dashboard',
   description: 'Version 0.0.2 Cleaner dashboard and player research tabs!',
   openGraph: {
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
       }
     ],
     type: 'website',
-    url: 'https://wogel-dashboard.vercel.app'
+    url: 'https://sleeper-nba-dashboard.vercel.app'
   },
   twitter: {
     card: 'summary_large_image',
