@@ -9,6 +9,7 @@ export default function Navigation() {
   const navItems = [
     { href: '/', label: 'Dashboard' },
     { href: '/players', label: 'Players' },
+    { href: '/research', label: 'Research' },
   ];
 
   return (
@@ -30,10 +31,10 @@ export default function Navigation() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-blue-500 text-white'
-                      : 'text-gray-600 hover:bg-gray-100'
+                      ? 'bg-gray-900 text-white'
+                      : 'text-gray-600 hover:bg-gray-700 hover:text-white'
                   }`}
                 >
                   {item.label}

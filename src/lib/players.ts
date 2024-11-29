@@ -32,6 +32,9 @@ export interface PlayerStats {
 // Initialize player cache
 const playersCache: Map<string, Player> = new Map();
 
+// Export the raw players data
+export const PLAYERS = nbaPlayers;
+
 // Initialize cache on module load
 initializePlayerCache();
 
@@ -49,11 +52,13 @@ export function initializePlayerCache(): void {
       injury_status: player.injury_status,
       injury_note: player.injury_note
     };
-    playersCache.set(mappedPlayer.player_id, mappedPlayer);
+
+    playersCache.set(player.player_id, mappedPlayer);
   });
-  
-  log('cache', `Cached ${playersCache.size} players`);
+
+  const endTime: number = performance.now();
   logPerformance('initializePlayerCache', startTime);
+  log('init', `Player cache initialized with ${playersCache.size} players`);
 }
 
 export function getPlayer(playerId: string): Player | undefined {

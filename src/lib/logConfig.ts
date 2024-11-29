@@ -11,7 +11,8 @@ export type LogCategory =
   | 'router'      // Next.js routing operations
   | 'data'        // Data fetching and transformations
   | 'init'        // Initialization and setup
-  | 'config';     // Configuration changes
+  | 'config'      // Configuration changes
+  | 'research';   // Research page and data operations
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
@@ -29,18 +30,13 @@ export const LOGGING_CONFIG: Record<string, LogConfig> = {
   development: {
     // Easily toggle categories by commenting/uncommenting
     enabledCategories: [
-      // Core logging
       'error',     // Always keep error logging
-      'debug',     // General debugging
-      // 'api',       // API call details
-      // 'performance', // Performance metrics
-      // 'players',   // Player-related logs
-      // 'scoring',   // Fantasy point calculation logs
-      // 'stats',     // Stats processing
-
+      'api',       // API call logs
+      'data',      // Data fetching logs
+      'players',   // Player-related logs
+      'research',  // Research page logs
       // 'ui',        // UI rendering logs
       // 'router',    // Routing logs
-      // 'data',      // Data fetching logs
       // 'init',      // Initialization logs
       // 'config'     // Configuration change logs
     ],

@@ -7,6 +7,8 @@ export interface User {
 export interface Roster {
   roster_id: number
   owner_id: string
+  players?: string[] 
+  starters?: string[] 
   settings?: {
     wins: number
     losses: number
